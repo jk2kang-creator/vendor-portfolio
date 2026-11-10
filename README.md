@@ -7,23 +7,28 @@
 | 파일 | 내용 |
 |---|---|
 | `index.html` | 포트폴리오 화면 + 관리자 기능 |
-| `01_vendors_schema.sql` | `vendors` 테이블, 수정자 자동 기록 트리거, 접근 정책(RLS) |
+| `01_vendors_schema.sql` | 관리자 계정(`app_users`), `portfolio_vendors` 테이블, 수정자 자동 기록 트리거, 접근 정책(RLS) |
 | `02_vendors_seed.sql` | 기존 대시보드의 73개 벤더 초기 데이터 (테이블이 비어 있을 때만 삽입) — **실데이터라 저장소에는 올리지 않음.** 작성자 PC의 `co-sell/vendor-portfolio/`에만 보관 |
 
-## 설치 (최초 1회)
+## 사이트
 
-영업 파이프라인과 **같은 Supabase 프로젝트**(`asuueoudciufikqjfbts`)의 SQL Editor에서 순서대로 실행합니다.
+- URL: https://jk2kang-creator.github.io/vendor-portfolio/
+- `main` 브랜치에 push하면 1~2분 안에 반영됩니다.
 
-1. `01_vendors_schema.sql`
-2. `02_vendors_seed.sql`
+## Supabase
 
-파이프라인의 `app_users` / `app_role()` / `app_is_approved()`(migration_03)를 그대로 사용하므로, 별도 계정 체계를 만들 필요가 없습니다.
+- 프로젝트: **etevers-bundle-hub** (`tghfiwrjjfzmipguvgti`) — 설치 완료, 73개 벤더 입력 완료
+- 같은 프로젝트에 번들 허브용 `vendors` 테이블이 따로 있어서, 포트폴리오는 **`portfolio_vendors`** 테이블을 씁니다.
+- 새 프로젝트에 다시 설치할 때는 SQL Editor에서 `01_vendors_schema.sql` → `02_vendors_seed.sql` 순서로 실행하고, `index.html`의 `SUPABASE_URL`·`SUPABASE_ANON_KEY`를 바꿉니다.
+- 무료 플랜은 약 일주일 동안 사용이 없으면 프로젝트가 일시정지됩니다. 사이트에 "불러오지 못했습니다"가 나오면 대시보드에서 Restore 하세요.
 
 ## 권한
 
 - **조회**: 누구나(로그인 불필요)
-- **추가·수정·삭제**: 파이프라인에서 역할이 **관리자(admin)** 이고 승인된 계정만 가능. 우측 상단 "관리자 로그인"으로 로그인합니다.
-- 관리자 지정·해제는 영업 파이프라인의 "사용자 관리" 화면에서 합니다.
+- **추가·수정·삭제**: `app_users`에서 역할이 **admin** 이고 승인된 계정만 가능. 우측 상단 "관리자 로그인"으로 로그인합니다.
+- 관리자 추가 방법
+  1. Supabase 대시보드 > Authentication > Users > **Add user** (이메일·비밀번호 입력, Auto Confirm 체크)
+  2. SQL Editor에서 실행: `update public.app_users set role = 'admin', is_approved = true where email = '이메일';`
 - 권한 검사는 화면이 아니라 DB(RLS)에서 하므로, 관리자가 아닌 사용자는 화면을 조작해도 데이터를 바꿀 수 없습니다.
 
 ## 관리자 모드에서 달라지는 점

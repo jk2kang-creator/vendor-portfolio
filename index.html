@@ -318,10 +318,10 @@ footer .wrap { padding-top: 22px; padding-bottom: 22px; display: flex; justify-c
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
-  // ---------- 설정 (영업 파이프라인과 같은 Supabase 프로젝트) ----------
-  var SUPABASE_URL = "https://asuueoudciufikqjfbts.supabase.co";
-  var SUPABASE_ANON_KEY = "sb_publishable_m0VSZ3Cl_29zOCIt59S5gQ_NiONIdlX";
-  // 파이프라인 화면과 로그인 세션이 섞이지 않도록 별도 저장 키 사용
+  // ---------- 설정 (Supabase 프로젝트: etevers-bundle-hub) ----------
+  var SUPABASE_URL = "https://tghfiwrjjfzmipguvgti.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_FXa5jEBZpK1qx0wrEuS32A_PJCeD31M";
+  // 같은 브라우저의 다른 Supabase 화면과 로그인 세션이 섞이지 않도록 별도 저장 키 사용
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'vendor-portfolio-auth' } });
 
   // ---------- 기준정보 ----------
@@ -409,7 +409,7 @@ footer .wrap { padding-top: 22px; padding-bottom: 22px; display: flex; justify-c
 
   async function loadVendors() {
     state.loading = true;
-    var res = await sb.from('vendors').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: true });
+    var res = await sb.from('portfolio_vendors').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: true });
     state.loading = false;
     if (res.error) {
       state.error = res.error.message;
@@ -632,7 +632,7 @@ footer .wrap { padding-top: 22px; padding-bottom: 22px; display: flex; justify-c
     $('loginModal').innerHTML =
       '<div class="overlay top" data-action="close-login"><div class="dialog narrow" role="dialog" aria-modal="true" aria-label="관리자 로그인">' +
       '<div class="dialog-head"><div class="titles"><span class="kicker">ADMIN</span><h2>관리자 로그인</h2>' +
-      '<span class="sub">영업 파이프라인 관리자 계정으로 로그인합니다.</span></div>' +
+      '<span class="sub">포트폴리오 관리자 계정으로 로그인합니다.</span></div>' +
       '<button class="btn-x" data-action="close-login" aria-label="닫기">✕</button></div>' +
       '<form class="dialog-body" id="loginForm" novalidate>' +
       (msg ? '<div class="form-error">' + esc(msg) + '</div>' : '') +
@@ -663,7 +663,7 @@ footer .wrap { padding-top: 22px; padding-bottom: 22px; display: flex; justify-c
     if (ok) { closeLogin(); toast('관리자 모드로 전환했습니다.'); }
     else {
       $('lgSubmit').disabled = false; $('lgSubmit').textContent = '로그인';
-      err.innerHTML = '<div class="form-error">관리자 권한이 없는 계정입니다. 영업 파이프라인의 사용자 관리에서 역할을 "관리자"로 지정받아야 합니다.</div>';
+      err.innerHTML = '<div class="form-error">관리자 권한이 없는 계정입니다. 담당자에게 관리자 지정을 요청하세요.</div>';
     }
   }
 
@@ -888,10 +888,10 @@ footer .wrap { padding-top: 22px; padding-bottom: 22px; display: flex; justify-c
     var btn = $('saveBtn'); btn.disabled = true; btn.textContent = '저장 중…';
     var res;
     if (edit.id) {
-      res = await sb.from('vendors').update(p).eq('id', edit.id).select();
+      res = await sb.from('portfolio_vendors').update(p).eq('id', edit.id).select();
     } else {
       p.sort_order = state.V.reduce(function (m, v) { return Math.max(m, v.sort_order || 0); }, 0) + 1;
-      res = await sb.from('vendors').insert(p).select();
+      res = await sb.from('portfolio_vendors').insert(p).select();
     }
     if (res.error || !res.data || !res.data.length) {
       edit.saving = false; btn.disabled = false; btn.textContent = edit.id ? '저장' : '추가';
@@ -910,7 +910,7 @@ footer .wrap { padding-top: 22px; padding-bottom: 22px; display: flex; justify-c
     var v = byId(id);
     if (!v) return;
     if (!confirm('"' + v.name + '" 벤더를 삭제할까요?\n삭제한 내용은 되돌릴 수 없습니다.')) return;
-    var res = await sb.from('vendors').delete().eq('id', id).select();
+    var res = await sb.from('portfolio_vendors').delete().eq('id', id).select();
     if (res.error || !res.data || !res.data.length) {
       toast('삭제하지 못했습니다: ' + (res.error ? res.error.message : '권한이 없습니다.'), true);
       return;
