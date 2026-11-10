@@ -125,6 +125,14 @@ $$ select app_role() = 'admin' and app_is_approved() $$;
 revoke execute on function public.is_portfolio_admin() from anon, public;
 grant execute on function public.is_portfolio_admin() to authenticated;
 
+-- 트리거 전용 함수는 API로 호출할 수 없게, 정책용 함수는 비로그인 호출 차단
+revoke execute on function public.handle_new_auth_user() from public, anon, authenticated;
+revoke execute on function public.portfolio_vendors_touch() from public, anon, authenticated;
+revoke execute on function public.app_role() from public, anon;
+revoke execute on function public.app_is_approved() from public, anon;
+grant execute on function public.app_role() to authenticated;
+grant execute on function public.app_is_approved() to authenticated;
+
 -- ============================================================
 -- 최초 관리자 지정 (한 번만)
 -- 1) Supabase 대시보드 > Authentication > Users > Add user 로 관리자 계정 생성
